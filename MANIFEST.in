@@ -6,3 +6,7 @@ include __init__.py
 include LICENSE
 include main.py
 exclude venv/*
+exclude .git/*
+exclude __pycache__/*
+exclude *.py[cod]
+exclude .DS_Store
