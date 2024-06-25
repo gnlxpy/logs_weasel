@@ -7,6 +7,48 @@ import requests
 class LogsWeasel:
 
     def __init__(self, settings):
+        """
+Information records/notifications. Marked in green in the terminal
+    log.info() - default message
+
+    log.info_start() - usually used when starting a function
+
+    log.info_done() - usually used when a function has completed successfully
+
+    log.info_not_done() - used when a function has not completed
+
+Notices to watch out for. Marked in yellow in the terminal.
+    log.warning() - important low
+
+    log.warning_not_done() - important medium
+
+    log.warning_error() - important high
+
+Critical notices. They have the ability to save in the terminal full descriptions of the errors that have occurred.
+    log.critical() - error with important high
+
+    log.critical_fatal() - error with important very high, х_х
+
+settings (dict):
+    {'redis_connection': {
+        'db': {{id_database, default that 0, int}},
+
+        'host': {{redis_host, str}}),
+
+        'port': {{number_of_port, int}},
+
+        'username': {{username, str}},
+
+        'password': {{password, str}},
+    'redis_files': {
+        'prefix_file': 'logs_',
+
+        'frequency': {{'day'/'week'/'month'}}},
+
+        'telegram_token': {{you_tg_token, str}},
+
+        'users_list': [{{telegram id, int ...}}]
+        """
         self.SETTINGS = settings
 
     def redis_init(self):
