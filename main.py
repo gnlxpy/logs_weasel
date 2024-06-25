@@ -1,8 +1,7 @@
 import redis
 import datetime
 import traceback
-from aiogram import Bot
-import asyncio
+import requests
 
 
 class LogsWeasel:
@@ -52,19 +51,22 @@ class LogsWeasel:
             except Exception:
                 traceback.print_exc()
 
-    async def send_users(self, message):
+    def send_message(self, message):
         if self.SETTINGS['telegram_token'] is None:
             return
         else:
-            try:
-                bot = Bot(token=self.SETTINGS['telegram_token'])
-                users = self.SETTINGS['users_list']
-                session = await bot.session.create_session()
-                for user in users:
-                    await bot.send_message(user, message)
-                await session.close()
-            except Exception:
-                traceback.print_exc()
+            url = f"https://api.telegram.org/bot{self.SETTINGS['telegram_token']}/sendMessage"
+            for user_id in self.SETTINGS['users_list']:
+                try:
+                    payload = {
+                        'chat_id': user_id,
+                        'text': message
+                    }
+                    response = requests.post(url, data=payload)
+                    if response.status_code != 200:
+                        print(f"Failed to send message to {user_id}: {response.text}")
+                except Exception:
+                    traceback.print_exc()
 
     def info(self, message, postfix='', send=False):
         message_full = f'INFO || {datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} || {message}'
@@ -72,7 +74,7 @@ class LogsWeasel:
         self.add_log_to_redis(message_full, postfix)
         if send:
             message_full = f'✅ INFO\n_ _ _ _ _\n{message}'
-            asyncio.run(self.send_users(message_full))
+            self.send_message(message_full)
 
     def info_start(self, message, postfix='', send=False):
         message_full = f'INFO || START || {datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} || {message}'
@@ -80,7 +82,7 @@ class LogsWeasel:
         self.add_log_to_redis(message_full, postfix)
         if send:
             message_full = f'✅ INFO\nSTART\n_ _ _ _ _\n{message}'
-            asyncio.run(self.send_users(message_full))
+            self.send_message(message_full)
 
     def info_done(self, message, postfix='', send=False):
         message_full = f'INFO || DONE || {datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} || {message}'
@@ -88,7 +90,7 @@ class LogsWeasel:
         self.add_log_to_redis(message_full, postfix)
         if send:
             message_full = f'✅ INFO\nDONE\n_ _ _ _ _\n{message}'
-            asyncio.run(self.send_users(message_full))
+            self.send_message(message_full)
 
     def info_not_done(self, message, postfix='', send=False):
         message_full = f'INFO || NOT DONE || {datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")} || {message}'
@@ -96,7 +98,7 @@ class LogsWeasel:
         self.add_log_to_redis(message_full, postfix)
         if send:
             message_full = f'✅ INFO\nNOT DONE\n_ _ _ _ _\n{message}'
-            asyncio.run(self.send_users(message_full))
+            self.send_message(message_full)
 
     def warning(self, message, postfix='', send=False, exc=False):
         if exc:
@@ -108,7 +110,7 @@ class LogsWeasel:
         self.add_log_to_redis(message_full, postfix)
         if send:
             message_full = f'⚠️ WARNING\n_ _ _ _ _\n{message}'
-            asyncio.run(self.send_users(message_full))
+            self.send_message(message_full)
 
     def warning_not_done(self, message, postfix='', send=False, exc=False):
         if exc:
@@ -120,7 +122,7 @@ class LogsWeasel:
         self.add_log_to_redis(message_full, postfix)
         if send:
             message_full = f'⚠️ WARNING\nNOT DONE\n_ _ _ _ _\n{message}'
-            asyncio.run(self.send_users(message_full))
+            self.send_message(message_full)
 
     def warning_error(self, message, postfix='', send=False, exc=False):
         if exc:
@@ -132,7 +134,7 @@ class LogsWeasel:
         self.add_log_to_redis(message_full, postfix)
         if send:
             message_full = f'⚠️ WARNING\nDONE WITH ERROR\n_ _ _ _ _\n{message}'
-            asyncio.run(self.send_users(message_full))
+            self.send_message(message_full)
 
     def critical(self, message, postfix='', send=False, exc=True):
         if exc:
@@ -144,7 +146,7 @@ class LogsWeasel:
         self.add_log_to_redis(message_full, postfix)
         if send:
             message_full = f'‼️ CRITICAL ERROR!\n_ _ _ _ _\n{message}'
-            asyncio.run(self.send_users(message_full))
+            self.send_message(message_full)
 
     def critical_fatal(self, message, postfix='', send=False, exc=True):
         if exc:
@@ -156,4 +158,4 @@ class LogsWeasel:
         self.add_log_to_redis(message_full, postfix)
         if send:
             message_full = f'‼️ FATAL ERROR!!!\n_ _ _ _ _\n{message}'
-            asyncio.run(self.send_users(message_full))
+            self.send_message(message_full)
