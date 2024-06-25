@@ -2,7 +2,7 @@ include README.md
 include requirements.txt
 include setup.py
 include pyproject.toml
-include __init__.py
+include logs_weasel/*
 include LICENSE
 include main.py
 exclude venv/*
