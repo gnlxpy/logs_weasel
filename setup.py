@@ -11,7 +11,7 @@ def parse_requirements(filename):
 requirements = parse_requirements('requirements.txt')
 
 setup(
-    name='my_package',
+    name='logs_weasel',
     version='1.1',
     packages=find_packages(),
     install_requires=requirements,
