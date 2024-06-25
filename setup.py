@@ -12,7 +12,7 @@ requirements = parse_requirements('requirements.txt')
 
 setup(
     name='logs_weasel',
-    version='1.14',
+    version='1.15',
     packages=find_packages(),
     install_requires=requirements,
     author='Aleksei Goncharov',
